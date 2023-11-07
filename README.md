@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-npm i -D @afordin/unocss-preset-token
+npm i -D unocss-preset-token
 ```
 
 ## Usages
