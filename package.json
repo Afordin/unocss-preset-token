@@ -1,0 +1,58 @@
+{
+  "name": "unocss-preset-token",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "UnoCSS preset to Design Token",
+  "license": "MIT",
+  "homepage": "https://github.com/afordin/unocss-preset-token#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afordin/unocss-preset-token.git"
+  },
+  "bugs": {
+    "url": "https://github.com/afordin/unocss-preset-token/issues"
+  },
+  "keywords": [
+    "unocss",
+    "unocss-preset",
+    "unocss-preset-token"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "*.css",
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "stub": "unbuild --stub",
+    "lint": "eslint .",
+    "lint:fix": "pnpm run lint --fix",
+    "typecheck": "tsc --noEmit",
+    "release": "bumpp package.json packages/**/package.json"
+  },
+  "peerDependencies": {
+    "@unocss/core": ">= 0.52.0"
+  },
+  "dependencies": {
+    "@unocss/core": "^0.57.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^1.0.0-beta.29",
+    "@types/node": "^20.8.9",
+    "@unocss/preset-uno": "^0.57.1",
+    "bumpp": "^9.2.0",
+    "eslint": "^8.52.0",
+    "typescript": "^5.2.2",
+    "unbuild": "^2.0.0"
+  }
+}
