@@ -1,88 +1,115 @@
 import type { PresetTokenOptions } from '.'
 
-const themeProps: Record<string, any> = { colors: { map: 'color.colors' } }
-const DEFAULT_SETTINGS = { divider: '-' }
+const EXCLUDE_PROPERTY = ['extensions', 'description']
+const TYPES_THEME = {
+  color: 'colors',
+  dimension: 'size',
+  'custom-spacing': 'spacing',
+  'custom-stroke': 'border',
+  radius: 'radius',
+  'custom-transition': 'transition',
+  'custom-opacity': 'opacity',
+  'custom-gradient': 'gradient',
+  'custom-grid': 'grid',
+  'custom-fontStyle': 'font',
+  'custom-shadow': 'shadow'
+}
 
-class CorePreset {
-  EXCLUDED_NESTED_PROPERTY = ['description', 'extensions']
-  settings: Omit<PresetTokenOptions, 'tokens'> = {}
-  tokens
-
-  constructor ({ tokens, ...settings }: PresetTokenOptions) {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, settings)
-    this.tokens = tokens
+export const definePreset = ({ divider, tokens }: PresetTokenOptions) => {
+  if (!tokens) {
+    console.warn('Tokens property is requried')
+    return {}
   }
 
-  getDivider () {
-    return this.settings?.divider || '-'
-  }
-
-  resolvePath (object: Record<string, any>, path: string, defaultValue?: any) {
-    return path.split('.').reduce((o, p) => (o ? o[p] : defaultValue), object)
-  }
-
-  isTokenRef (token: string) {
+  function isTokenRef (token: string) {
     if (!token) return false
+    if (typeof token !== 'string') return false
+
     return token.startsWith('{') && token.endsWith('}')
   }
 
-  processTokenRef (token: string) {
-    const cleaning = token.slice(1, -1)
-    const path = this.resolvePath(this.tokens, cleaning)
-    return path ? path.value : undefined
+  function getDivider () {
+    return divider && ['-', '_', '.'].includes(divider) ? divider : '-'
   }
 
-  nestedProperty (parentKey: string, properties: Record<string, any>) {
-    return Object.entries(properties).reduce((acc, [keyNested, property]) => {
-      if (!this.EXCLUDED_NESTED_PROPERTY.includes(keyNested)) {
-        const _class = [parentKey, keyNested].join(this.getDivider())
-
-        if (property.value) {
-          let value = property.value
-
-          if (this.isTokenRef(value)) value = this.processTokenRef(value)
-
-          if (value) acc[_class] = value
-        }
-      }
-
-      return acc
-    }, {} as Record<string, any>)
+  function processTokenRef (token: string, tokensType: Record<string, any>) {
+    const cleaning = token
+      .slice(1, -1)
+      .replaceAll(' ', getDivider())
+      .replaceAll('.', getDivider())
+    return tokensType[cleaning] || token
   }
 
-  definePreset () {
-    if (!this.tokens) return {}
+  function recursiveReduce (
+    data: Record<string, any>,
+    parentKey?: string,
+    defaultAcc = {}
+  ): Record<string, any> {
+    return Object.entries(data).reduce(
+      (acc, [key, property]: [key: string, property: Record<string, any>]) => {
+        let newKey = parentKey ? [parentKey, key].join(getDivider()) : key
+        newKey = newKey.replaceAll(' ', getDivider())
 
-    return Object.entries(themeProps).reduce((acc, [keyOption, themeProp]) => {
-      const option = this.resolvePath(this.tokens, themeProp.map)
-      if (!option) return acc
+        if (EXCLUDE_PROPERTY.includes(key)) return acc
 
-      const properties = Object.entries(option).reduce(
-        (
-          acc,
-          [keyProperty, property]: [keyProperty: string, property: any]
-        ) => {
-          const _class = keyProperty.replaceAll(' ', this.getDivider())
+        if (property.hasOwnProperty('value') && property.type) {
+          const type =
+            TYPES_THEME[property.type as keyof typeof TYPES_THEME] || null
 
-          if (property.value) {
-            let value = property.value
-
-            if (this.isTokenRef(value)) value = this.processTokenRef(value)
-
-            if (value) acc[_class] = value
-            return acc
+          if (type) {
+            acc[type] ||= {}
+            acc[type][newKey] = isTokenRef(property.value)
+              ? processTokenRef(property.value, acc[type])
+              : property.value
           }
 
-          const nested = this.nestedProperty(_class, property)
-          return Object.assign({}, acc, nested)
-        },
-        {} as Record<string, any>
-      )
-      acc[keyOption] = properties
+          return acc
+        }
 
-      return acc
-    }, {} as Record<string, any>)
+        if (property.description || property.extensions) return acc
+
+        return recursiveReduce(property, newKey, acc)
+      },
+      defaultAcc as Record<string, any>
+    )
   }
+
+  function recursive (
+    data: Record<string, any>,
+    parentKey?: string,
+    acc: Record<string, any> = {}
+  ): Record<string, any> {
+    const arr = Object.entries(data)
+
+    for (let [key, property] of arr) {
+      if (EXCLUDE_PROPERTY.includes(key)) continue
+
+      let newKey = parentKey ? [parentKey, key].join('-') : key
+      newKey = newKey.replaceAll(' ', '-')
+
+      if (property.hasOwnProperty('value') && property.type) {
+        const type =
+          TYPES_THEME[property.type as keyof typeof TYPES_THEME] || null
+
+        if (type) {
+          acc[type] ||= {}
+          acc[type][newKey] = isTokenRef(property.value)
+            ? processTokenRef(property.value, acc[type])
+            : property.value
+        }
+
+        continue
+      }
+
+      if (property.description || property.extensions) continue
+
+      recursive(property, newKey, acc)
+    }
+
+    return acc
+  }
+
+  return recursive(tokens)
 }
 
-export default CorePreset
+export default definePreset

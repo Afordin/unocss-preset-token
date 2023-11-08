@@ -1,5 +1,7 @@
 import { type Preset, mergeDeep } from '@unocss/core'
-import CorePreset from './core'
+import { definePreset } from './core'
+
+export * from './core'
 
 export interface PresetTokenOptions {
   /**
@@ -16,12 +18,13 @@ export interface PresetTokenOptions {
 export function presetToken<T extends Record<string, any>> (
   options: PresetTokenOptions
 ): Preset<T> {
-  const instance = new CorePreset(options)
-
   return {
     name: 'afordin/unocss-preset-token',
     extendTheme: util => {
-      return mergeDeep(util, instance.definePreset())
+      return mergeDeep(
+        util,
+        definePreset({ divider: options.divider, tokens: options.tokens })
+      )
     }
   }
 }
