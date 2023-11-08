@@ -96,8 +96,8 @@ export const definePreset = ({ divider, tokens }: PresetTokenOptions) => {
       if (EXCLUDE_PROPERTY.includes(key)) continue
       if (!isObject(property)) continue
 
-      let newKey = parentKey ? [parentKey, key].join('-') : key
-      newKey = newKey.replaceAll(' ', '-')
+      let newKey = parentKey ? [parentKey, key].join(getDivider()) : key
+      newKey = newKey.replaceAll(' ', getDivider())
 
       if (property.hasOwnProperty('value') && property.type) {
         const type =
