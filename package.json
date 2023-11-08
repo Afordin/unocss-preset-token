@@ -35,6 +35,8 @@
   "scripts": {
     "build": "unbuild",
     "stub": "unbuild --stub",
+    "play": "pnpm --filter ./playground run dev",
+    "test": "vitest",
     "lint": "eslint .",
     "lint:fix": "pnpm run lint --fix",
     "typecheck": "tsc --noEmit",
@@ -53,6 +55,7 @@
     "bumpp": "^9.2.0",
     "eslint": "^8.52.0",
     "typescript": "^5.2.2",
-    "unbuild": "^2.0.0"
+    "unbuild": "^2.0.0",
+    "vitest": "^0.34.6"
   }
 }
