@@ -1,5 +1,5 @@
 {
-  "name": "unocss-preset-token",
+  "name": "@afordin/unocss-preset-token",
   "type": "module",
   "version": "0.0.6",
   "packageManager": "pnpm@8.9.2",
@@ -58,5 +58,9 @@
     "typescript": "^5.2.2",
     "unbuild": "^2.0.0",
     "vitest": "^0.34.6"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "author": "Juan Pablo <juanpablo.is@outlook.com> (https://jotapeis.tech)"
 }
