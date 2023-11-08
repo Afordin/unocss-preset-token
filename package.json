@@ -1,7 +1,7 @@
 {
   "name": "unocss-preset-token",
   "type": "module",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "packageManager": "pnpm@8.9.2",
   "description": "UnoCSS preset to Design Token",
   "license": "MIT",
