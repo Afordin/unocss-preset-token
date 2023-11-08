@@ -2,6 +2,7 @@
   "name": "unocss-preset-token",
   "type": "module",
   "version": "0.0.2",
+  "packageManager": "pnpm@8.9.2",
   "description": "UnoCSS preset to Design Token",
   "license": "MIT",
   "homepage": "https://github.com/afordin/unocss-preset-token#readme",
