@@ -15,11 +15,17 @@ const TYPES_THEME = {
   'custom-shadow': 'shadow'
 }
 
+const isObjectEmpty = (objectName: Record<string, any>) => {
+  return Object.keys(objectName).length === 0
+}
+
 export const definePreset = ({ divider, tokens }: PresetTokenOptions) => {
   if (!tokens) {
     console.warn('Tokens property is requried')
     return {}
   }
+
+  if (isObjectEmpty(tokens)) return {}
 
   function isTokenRef (token: string) {
     if (!token) return false
